@@ -1,160 +1,88 @@
 # YaComio!
 
-## Overview:
+A native Godot 4.7 incremental game module for DeskCanSaw's `godot-base`.
+This repository belongs at `godot-base\games\yacomio`; open the parent's
+`project.godot`, not a separate project inside this folder.
 
-This incremental/idle game will simulate evolutionary progress, beginning from microbial life and advancing through photosynthesis, complex multicellular organisms, up to human civilization. Gameplay revolves around accumulation of evolutionary points (EP), unlocking milestones, and progressively complex lifeforms and technologies.
+## Play
 
----
+From `godot-base`:
 
-## Game Progression Structure:
+```powershell
+godot --path . -- --game=yacomio
+godot --path . -- --game=all
+```
 
-### Stage 1: Microbial Beginnings
+The shared framework supplies the studio opening, branded title screen,
+instructions, settings, pause menu and save manager. The gameplay scene inherits
+`GameShell` and opts out of countdowns and lives.
 
-* **Starting Point**: Player starts with basic microbial life.
-* **Core Resource**: Evolution Points (EP) gained passively.
-* **Actions & Upgrades**:
+## Microbial Beginnings
 
-  * Increase EP generation rate.
-  * Unlock RNA, DNA replication, simple membranes.
-  * First idle interactions: "tap" microbes to boost EP briefly.
+- Start with **0 Evolution Points (EP)** and earn **1 EP per second**.
+- Tap or click **Tap Microbe** for **5 EP**.
+- Buy **RNA** once for **10 EP**, adding **1 EP per second**.
+- Buy **DNA Replication** once for **50 EP**, adding **3 EP per second**.
 
-### Stage 2: Photosynthesis
+Either upgrade may be purchased first; both together produce **5 EP per second**.
+There is no round deadline, prestige or later stage yet. Passive generation
+stops while paused or closed; offline gains are not implemented.
 
-* **Milestone**: Unlock photosynthesis by accumulating enough EP.
-* **Resource Addition**: Light Energy (passive generation during daytime cycles).
-* **Actions & Upgrades**:
+The default keyboard shortcuts are **M** (tap), **1** (RNA), **2** (DNA), and
+**Esc** (pause). Rebind the three game actions in **Settings > Controls**.
+Buttons also support mouse, touch and keyboard/controller focus navigation.
 
-  * Improve chloroplast efficiency.
-  * Create simple aquatic plants and algae.
-  * Photosynthesis boosts EP generation exponentially.
+## Saves
 
-### Stage 3: Complex Lifeforms
+Every resource tick and successful action saves to `user://yacomio.cfg`.
+The manifest declares this file so the shared **Saves** screen can back up,
+restore or delete it without changing settings or another game's progress.
+The Godot port starts fresh; it does not import the React prototype's
+`localStorage` save.
 
-* **Milestone**: Develop multicellularity by combining microbial upgrades.
-* **Resource Addition**: Biological Complexity Points (BCP).
-* **Actions & Upgrades**:
+A damaged or newer save is left untouched and gameplay is disabled with an
+explanation. Back it up or delete it through the title screen's Saves menu
+before starting again. Write failures are shown in-game rather than reported
+as successful saves.
 
-  * Unlock marine life (e.g., sponges, jellyfish, fish).
-  * Land colonization (amphibians, insects, plants).
-  * Complex biological systems (nervous systems, organs, sensory upgrades).
-* Special events (e.g., Cambrian Explosion) offer rapid progress.
+## Structure and checks
 
-### Stage 4: Terrestrial Dominance
+`game.gd` declares the module; `yacomio_options.gd` owns its bindings and upgrade
+data; `evolution_state.gd` owns resource rules and persistence; `gameplay.tscn`
+and `gameplay.gd` adapt them to the shared shell. Original vector art is in
+`assets`, and the headless regression scripts are in `tests`. The silent,
+captioned walkthrough is recorded from real inputs by `tools\tutorial_driver.gd`.
 
-* **Milestone**: Accumulate sufficient BCP to support terrestrial ecosystems.
-* **Resource Addition**: Biodiversity Points (BP).
-* **Actions & Upgrades**:
+Run from `godot-base`:
 
-  * Dinosaur age, mammals, flowering plants.
-  * Unlock environmental adaptations (e.g., warm-bloodedness, feathers).
-  * Survive extinction events for temporary challenges and rewards.
+```powershell
+godot --headless --path . --import
+godot --headless --path . --script res://games/yacomio/tests/evolution_state_test.gd -- --game=all
+godot --headless --path . --script res://games/yacomio/tests/yacomio_scene_test.gd -- --game=all
+```
 
-### Stage 5: Human Evolution
+The scene suite also runs windowed to check actual layout and input:
 
-* **Milestone**: Mammals evolve towards primates and eventually humans.
-* **Resource Addition**: Intelligence Points (IP).
-* **Actions & Upgrades**:
+```powershell
+godot --path . --script res://games/yacomio/tests/yacomio_scene_test.gd -- --game=all
+```
 
-  * Cognitive and social upgrades (language, tools, agriculture).
-  * Develop civilizations, unlock cultural, scientific, technological advancements.
-  * Special idle mechanics: culture production, population growth.
+On Windows, callers that need an exit code from Godot's GUI executable should
+use `Start-Process -NoNewWindow -Wait -PassThru` and check `.ExitCode`.
+The parent project provides **Windows - YaComio (standalone)** and
+**Web - YaComio (standalone)** export presets with the `yacomio` feature tag and
+a stable, separate `DeskCanSaw Games/YaComio` save directory.
 
----
+To re-record the walkthrough after changing visuals or captions, run the shared
+recorder from `godot-base` (requires FFmpeg):
 
-## Game Mechanics:
+```powershell
+pwsh tools\record_tutorials.ps1 -Godot godot -Games yacomio
+```
 
-### Incremental Progression:
+## Roadmap (not implemented)
 
-* Automatic generation of resources (EP, BCP, BP, IP).
-* Upgrades and unlockables increase passive income rates.
-
-### Idle Features:
-
-* Offline progress calculation.
-* Periodic in-game boosts or "Golden Ages" triggered by milestones.
-* Special taps/actions providing short-term resource bursts.
-
-### Prestige System:
-
-* Allow players to restart from microbial life but retain bonuses.
-* "Evolutionary leaps" offer permanent percentage increases in resource generation.
-
----
-
-## Tech Stack Recommendation:
-
-* **Frontend**: React or Vue.js for interactive UI.
-* **Backend** (optional for more complexity): Node.js + FastAPI (Python) for API management.
-* **Local Simulation Engine**: Python for complex calculation simulations (can be mocked in development).
-* **Data Storage**: IndexedDB or localStorage for lightweight, persistent player progress.
-
----
-
-## Development Steps:
-
-### 1. Initial Project Setup:
-
-* Set up React frontend scaffolding.
-* Integrate local storage for saving/loading player data.
-
-### 2. Resource Generation Logic:
-
-* Establish base incremental logic (EP generation, upgrades).
-* Create a clear UI displaying resources and upgrade options.
-
-### 3. Unlockable Content & Milestones:
-
-* Design a progression tree clearly visualized in the UI.
-* Implement upgrade paths and dependencies.
-
-### 4. Idle Mechanics:
-
-* Integrate offline calculation and catch-up logic.
-* Create passive boost mechanics activated by milestones or player actions.
-
-### 5. Prestige and Leaps:
-
-* Develop a prestige system, allowing resets for faster progression.
-* Ensure meaningful and engaging player rewards.
-
----
-
-## AI-Driven Design Assistance:
-
-* Leverage ChatGPT to:
-
-  * Generate realistic scientific descriptions and fun facts for upgrades.
-  * Provide balanced numerical progressions for incremental mechanics.
-  * Suggest engaging UI/UX enhancements and thematic consistency.
-
----
-
-## Suggested Milestone Roadmap:
-
-* **MVP (Initial Release)**:
-
-  * Basic microbial to photosynthesis stages.
-  * Fundamental resource generation and idle mechanics.
-
-* **Version 1.1**:
-
-  * Complex organisms and terrestrial lifeforms.
-  * Enhanced visual representation and animations.
-
-* **Version 1.2**:
-
-  * Human evolution and civilization features.
-  * Prestige mechanics for replayability.
-
-* **Future Expansions**:
-
-  * Space exploration, planetary colonization.
-  * Multiverse or alternative evolution paths.
-
----
-
-## Example Interaction Prompts (ChatGPT Assistance):
-
-* *"Suggest an incremental upgrade pathway from microbes to multicellularity."*
-* *"Provide balanced resource generation formulas for idle gameplay."*
-* *"Generate concise and entertaining upgrade descriptions related to early Earth lifeforms."*
+The original design continues through photosynthesis and light energy,
+multicellular life and Biological Complexity Points, terrestrial biodiversity,
+and human intelligence and civilization. Offline progress, milestone events
+and evolutionary-leap prestige remain future work, not features of this port.
