@@ -1,0 +1,102 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://games/yacomio/intro.gd" id="1_intro"]
+[ext_resource type="PackedScene" path="res://games/yacomio/colony_view.tscn" id="2_view"]
+[ext_resource type="PackedScene" path="res://ui/components/background.tscn" id="3_background"]
+
+[node name="EvolutionIntro" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_intro")
+
+[node name="Background" parent="." instance=ExtResource("3_background")]
+layout_mode = 1
+
+[node name="Margins" type="MarginContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Layout" type="VBoxContainer" parent="Margins"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Header" type="HBoxContainer" parent="Margins/Layout"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="Margins/Layout/Header"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "YaComio!"
+
+[node name="Step" type="Label" parent="Margins/Layout/Header"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "1 / 5"
+
+[node name="Body" type="BoxContainer" parent="Margins/Layout"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 24
+
+[node name="Stage" parent="Margins/Layout/Body" instance=ExtResource("2_view")]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+role = "intro"
+accessibility_name = "Original evolution story diorama"
+
+[node name="CopyScroll" type="ScrollContainer" parent="Margins/Layout/Body"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+follow_focus = true
+focus_mode = 2
+accessibility_name = "Evolution story text"
+accessibility_description = "Read at your own pace. Next advances; Skip and Escape open the title."
+
+[node name="CopyColumn" type="VBoxContainer" parent="Margins/Layout/Body/CopyScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 20
+
+[node name="Heading" type="Label" parent="Margins/Layout/Body/CopyScroll/CopyColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
+
+[node name="Copy" type="Label" parent="Margins/Layout/Body/CopyScroll/CopyColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
+
+[node name="Actions" type="HBoxContainer" parent="Margins/Layout"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="SkipButton" type="Button" parent="Margins/Layout/Actions"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Skip"
+theme_type_variation = &"NavigationButton"
+
+[node name="NextButton" type="Button" parent="Margins/Layout/Actions"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Next"
+theme_type_variation = &"NavigationButton"

@@ -1,6 +1,6 @@
 extends RefCounted
 
-## The recording earns both upgrades through real bound keys on a fresh colony.
+## The recording reaches photosynthesis through real keys on a fresh colony.
 ## It never edits resource state or changes the live production rate.
 
 signal keycap_requested(text: String)
@@ -16,6 +16,8 @@ const ACTIONS: Array[Dictionary] = [
 	{"time": 14.8, "action": Options.TAP_ACTION, "button": "TapMicrobe"},
 	{"time": 15.6, "action": Options.TAP_ACTION, "button": "TapMicrobe"},
 	{"time": 17.2, "action": Options.DNA_ACTION, "button": "BuyDNA"},
+	{"time": 37.4, "action": Options.MEMBRANE_ACTION, "button": "BuyMembrane"},
+	{"time": 58.4, "action": Options.EVOLVE_ACTION, "button": "Evolve"},
 ]
 
 var _next_action := 0
@@ -49,18 +51,35 @@ func steps() -> Array[Dictionary]:
 		},
 		{
 			"time": 18.0, "title": "A little more life",
-			"body": "Both upgrades earn 5 EP/s. Progress auto-saves; paused and offline time earn nothing.",
+			"body": "Both strands earn 5 EP/s. Active EP also earns separate cosmetic Spore Tokens.",
+		},
+		{
+			"time": 32.0, "title": "Build a membrane",
+			"body": "Membranes cost 100 EP and add 5 EP/s. They need both RNA and DNA.",
+		},
+		{
+			"time": 42.0, "title": "Prepare to evolve",
+			"body": "Save 200 EP, then choose Evolve. Nothing advances behind your back.",
+		},
+		{
+			"time": 57.0, "title": "Borrowed sunlight",
+			"body": "Photosynthesis starts Light Energy. Day and night last 60 simulated seconds each.",
+		},
+		{
+			"time": 61.0, "title": "Your world keeps growing",
+			"body": "Offline time earns resources, never tokens. Pause stops production. Later eras add life, civilization and optional leaps.",
 		},
 	]
 
 
 func duration() -> float:
-	return 24.0
+	return 67.0
 
 
 func settings_overrides() -> Dictionary:
 	return {
 		Options.TAP_KEY: KEY_M, Options.RNA_KEY: KEY_1, Options.DNA_KEY: KEY_2,
+		Options.MEMBRANE_KEY: KEY_3, Options.EVOLVE_KEY: KEY_E,
 		"ui/scale": 1.0,
 	}
 
@@ -72,6 +91,7 @@ func configure_session(session: Node) -> void:
 func start(scene: Node) -> void:
 	var state: RefCounted = scene.get("_state")
 	_fresh = int(state.get("ep")) == 0 and (state.get("upgrades") as Array).is_empty()
+	_fresh = _fresh and int(state.get("stage")) == 0 and int(state.get("leaps")) == 0
 	if not _fresh:
 		push_error("YaComio walkthrough requires a fresh, isolated save profile.")
 
@@ -94,9 +114,9 @@ func validate_finished(scene: Node) -> bool:
 	var owned: Array = state.get("upgrades")
 	return (
 		_fresh and _next_action == ACTIONS.size()
-		and owned.has("rna") and owned.has("dna")
-		and int(state.call("ep_per_second")) == 5
-		and int(scene.get("_save_error")) == OK
+		and owned.has("rna") and owned.has("dna") and owned.has("membrane")
+		and int(state.get("stage")) == 1 and int(state.call("ep_per_second")) == 24
+		and int(scene.get("_save_error")) == OK and int(scene.get("_wallet_error")) == OK
 	)
 
 

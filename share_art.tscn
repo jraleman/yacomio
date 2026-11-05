@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="PackedScene" path="res://games/yacomio/colony_view.tscn" id="1_view"]
+
+[node name="EvolutionShareArt" instance=ExtResource("1_view")]
+role = "share"

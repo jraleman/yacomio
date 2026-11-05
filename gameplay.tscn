@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" path="res://scenes/game/game_shell.tscn" id="1_shell"]
 [ext_resource type="Script" path="res://games/yacomio/gameplay.gd" id="2_game"]
-[ext_resource type="Texture2D" path="res://games/yacomio/assets/icon.svg" id="3_microbe"]
+[ext_resource type="PackedScene" path="res://games/yacomio/colony_view.tscn" id="3_view"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBox_colony"]
 content_margin_left = 28.0
@@ -31,80 +31,162 @@ offset_right = 1500.0
 offset_bottom = 975.0
 theme_override_styles/panel = SubResource("StyleBox_colony")
 
-[node name="EvolutionScroll" type="ScrollContainer" parent="HUD/Overlay/EvolutionPanel"]
+[node name="EvolutionBody" type="BoxContainer" parent="HUD/Overlay/EvolutionPanel"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="ColonyView" parent="HUD/Overlay/EvolutionPanel/EvolutionBody" instance=ExtResource("3_view")]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+accessibility_name = "Original living colony diorama"
+
+[node name="EvolutionScroll" type="ScrollContainer" parent="HUD/Overlay/EvolutionPanel/EvolutionBody"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 horizontal_scroll_mode = 0
 follow_focus = true
 
-[node name="Colony" type="VBoxContainer" parent="HUD/Overlay/EvolutionPanel/EvolutionScroll"]
+[node name="Colony" type="VBoxContainer" parent="HUD/Overlay/EvolutionPanel/EvolutionBody/EvolutionScroll"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 18
 
-[node name="Heading" type="Label" parent="HUD/Overlay/EvolutionPanel/EvolutionScroll/Colony"]
+[node name="EraHeading" type="Label" parent="HUD/Overlay/EvolutionPanel/EvolutionBody/EvolutionScroll/Colony"]
+unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 34
 text = "Microbial Beginnings"
-horizontal_alignment = 1
 autowrap_mode = 3
 
-[node name="EvolutionPoints" type="Label" parent="HUD/Overlay/EvolutionPanel/EvolutionScroll/Colony"]
+[node name="EraDescription" type="Label" parent="HUD/Overlay/EvolutionPanel/EvolutionBody/EvolutionScroll/Colony"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
+
+[node name="EvolutionPoints" type="Label" parent="HUD/Overlay/EvolutionPanel/EvolutionBody/EvolutionScroll/Colony"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 42
 text = "0 Evolution Points"
-horizontal_alignment = 1
 autowrap_mode = 3
 
-[node name="TapMicrobe" type="Button" parent="HUD/Overlay/EvolutionPanel/EvolutionScroll/Colony"]
+[node name="ResourcesLabel" type="Label" parent="HUD/Overlay/EvolutionPanel/EvolutionBody/EvolutionScroll/Colony"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 144)
 layout_mode = 2
-theme_override_constants/icon_max_width = 96
-theme_override_font_sizes/font_size = 28
-text = "Tap Microbe (+5 EP)"
-icon = ExtResource("3_microbe")
-expand_icon = true
 autowrap_mode = 3
 
-[node name="UpgradesHeading" type="Label" parent="HUD/Overlay/EvolutionPanel/EvolutionScroll/Colony"]
+[node name="WalletLabel" type="Label" parent="HUD/Overlay/EvolutionPanel/EvolutionBody/EvolutionScroll/Colony"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
+
+[node name="TapMicrobe" type="Button" parent="HUD/Overlay/EvolutionPanel/EvolutionBody/EvolutionScroll/Colony"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 72)
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "Gather EP (+5)"
+autowrap_mode = 3
+
+[node name="UpgradesHeading" type="Label" parent="HUD/Overlay/EvolutionPanel/EvolutionBody/EvolutionScroll/Colony"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 27
 text = "Upgrades"
 
-[node name="BuyRNA" type="Button" parent="HUD/Overlay/EvolutionPanel/EvolutionScroll/Colony"]
+[node name="UpgradeList" type="VBoxContainer" parent="HUD/Overlay/EvolutionPanel/EvolutionBody/EvolutionScroll/Colony"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="EvolutionGate" type="Label" parent="HUD/Overlay/EvolutionPanel/EvolutionBody/EvolutionScroll/Colony"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
+
+[node name="GateProgress" type="ProgressBar" parent="HUD/Overlay/EvolutionPanel/EvolutionBody/EvolutionScroll/Colony"]
+unique_name_in_owner = true
+layout_mode = 2
+show_percentage = false
+accessibility_name = "Next era requirements fulfilled"
+
+[node name="Evolve" type="Button" parent="HUD/Overlay/EvolutionPanel/EvolutionBody/EvolutionScroll/Colony"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 72)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
-text = "Unlock RNA (10 EP)"
+text = "Evolve"
 autowrap_mode = 3
 
-[node name="RNADescription" type="Label" parent="HUD/Overlay/EvolutionPanel/EvolutionScroll/Colony"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 22
-text = "Adds 1 EP per second."
-autowrap_mode = 3
-
-[node name="BuyDNA" type="Button" parent="HUD/Overlay/EvolutionPanel/EvolutionScroll/Colony"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 72)
-layout_mode = 2
-theme_override_font_sizes/font_size = 24
-text = "Unlock DNA Replication (50 EP)"
-autowrap_mode = 3
-
-[node name="DNADescription" type="Label" parent="HUD/Overlay/EvolutionPanel/EvolutionScroll/Colony"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 22
-text = "Adds 3 EP per second."
-autowrap_mode = 3
-
-[node name="SaveStatus" type="Label" parent="HUD/Overlay/EvolutionPanel/EvolutionScroll/Colony"]
+[node name="MilestoneEvent" type="Button" parent="HUD/Overlay/EvolutionPanel/EvolutionBody/EvolutionScroll/Colony"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 22
-text = "Progress saves automatically. No offline gains."
-horizontal_alignment = 1
+text = "Milestone event"
 autowrap_mode = 3
+
+[node name="EventDescription" type="Label" parent="HUD/Overlay/EvolutionPanel/EvolutionBody/EvolutionScroll/Colony"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
+
+[node name="EvolutionaryLeap" type="Button" parent="HUD/Overlay/EvolutionPanel/EvolutionBody/EvolutionScroll/Colony"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Evolutionary Leap (+25%)"
+autowrap_mode = 3
+
+[node name="FinishVisit" type="Button" parent="HUD/Overlay/EvolutionPanel/EvolutionBody/EvolutionScroll/Colony"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Finish visit / Share"
+autowrap_mode = 3
+
+[node name="SaveStatus" type="Label" parent="HUD/Overlay/EvolutionPanel/EvolutionBody/EvolutionScroll/Colony"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Progress saves automatically."
+autowrap_mode = 3
+
+[node name="LeapConfirmation" type="ConfirmationDialog" parent="."]
+unique_name_in_owner = true
+process_mode = 3
+visible = false
+title = "Make an evolutionary leap?"
+dialog_autowrap = true
+dialog_text = "Restart at microbes with +25% permanent production.\n\nAll evolution resources, upgrades and active events reset.\nYour earned Spore Tokens, cosmetics, achievements and prior leaps remain.\n\nThis cannot be undone without restoring a backup."
+ok_button_text = "Make leap"
+
+[node name="Eyebrow" parent="HUD/RoundOver/Center/ScorePanel/Layout" index="0"]
+text = "EVOLUTION JOURNAL"
+
+[node name="Caption" parent="HUD/RoundOver/Center/ScorePanel/Layout/Report/SharePanel/Layout" index="0"]
+text = "SHAREABLE JOURNAL"
+
+[node name="Caption" parent="HUD/RoundOver/Center/ScorePanel/Layout/Overview/Duration/Layout" index="0"]
+text = "VISIT TIME"
+
+[node name="Caption" parent="HUD/RoundOver/Center/ScorePanel/Layout/Overview/Hits/Layout" index="0"]
+text = "ERA"
+
+[node name="Caption" parent="HUD/RoundOver/Center/ScorePanel/Layout/Overview/Accuracy/Layout" index="0"]
+text = "EP PER SECOND"
+
+[node name="ScoreCaption" parent="HUD/RoundOver/Center/ScorePanel/Layout/Report/Players/PlayerOne/Layout" index="2"]
+text = "EP THIS VISIT"
+
+[node name="HitsCaption" parent="HUD/RoundOver/Center/ScorePanel/Layout/Report/Players/PlayerOne/Layout/Stats" index="0"]
+text = "Upgrades"
+
+[node name="MissesCaption" parent="HUD/RoundOver/Center/ScorePanel/Layout/Report/Players/PlayerOne/Layout/Stats" index="2"]
+text = "Tokens earned"
+
+[node name="AccuracyCaption" parent="HUD/RoundOver/Center/ScorePanel/Layout/Report/Players/PlayerOne/Layout/Stats" index="4"]
+text = "EP per second"
+
+[node name="StreakCaption" parent="HUD/RoundOver/Center/ScorePanel/Layout/Report/Players/PlayerOne/Layout/Stats" index="6"]
+text = "Leaps"
