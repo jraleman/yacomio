@@ -9,12 +9,12 @@ content_margin_left = 28.0
 content_margin_top = 24.0
 content_margin_right = 28.0
 content_margin_bottom = 24.0
-bg_color = Color(0.035, 0.09, 0.08, 0.94)
+bg_color = Color(0.035, 0.09, 0.08, 0.18)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.48, 0.85, 0.65, 0.45)
+border_color = Color(0.48, 0.85, 0.65, 0.18)
 corner_radius_top_left = 20
 corner_radius_top_right = 20
 corner_radius_bottom_left = 20
@@ -94,6 +94,7 @@ text = "Gather EP (+5)"
 autowrap_mode = 3
 
 [node name="UpgradesHeading" type="Label" parent="HUD/Overlay/EvolutionPanel/EvolutionBody/EvolutionScroll/Colony"]
+visible = false
 layout_mode = 2
 theme_override_font_sizes/font_size = 27
 text = "Upgrades"

@@ -94,6 +94,8 @@ Default controls: **M** gather, **1** RNA, **2** DNA, **3** membranes, **E** evo
 All purchases, events and leaps have mouse/touch and focus-navigation buttons.
 Portrait places the colony above scrollable actions; landscape places it beside
 them. Reduced motion parks the original 3D colony without changing production.
+**Help** expands the longer colony and upgrade explanations; resources, prices,
+purchase actions and save failures remain visible in the compact HUD.
 
 ## Saves
 

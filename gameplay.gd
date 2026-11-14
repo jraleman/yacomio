@@ -63,6 +63,8 @@ func _build_playfield() -> void:
 			_status_note = "The previous session was interrupted while suspended. Its unknown offline interval was not counted."
 	_tap_button.pressed.connect(_tap_microbe)
 	_build_upgrade_buttons()
+	for control in [_description, _wallet_label, _gate_label]:
+		register_hud_controls(control, _layout_panel, false)
 	_evolve_button.pressed.connect(_evolve)
 	_event_button.pressed.connect(_trigger_event)
 	_leap_button.pressed.connect(_request_prestige)
@@ -98,6 +100,7 @@ func _build_upgrade_buttons() -> void:
 		description.text = str(Options.UPGRADES[id]["description"])
 		description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		row.add_child(description)
+		register_hud_controls(description, _layout_panel, false)
 		_upgrade_buttons[id] = button
 		_upgrade_rows[id] = row
 
@@ -298,7 +301,7 @@ func _refresh_progress() -> void:
 	var era: Dictionary = Options.STAGES[_state.stage]
 	_heading.text = str(era["title"])
 	_description.text = str(era["description"])
-	_ep_label.text = "Save unavailable" if unreadable else "%s Evolution Points" % Options.number(_state.ep)
+	_ep_label.text = "Save unavailable" if unreadable else "%s EP" % Options.number(_state.ep)
 	_time_label.text = "--" if unreadable else Options.number(_state.ep_per_second())
 	_tap_button.text = "Gather EP (+%s)" % Options.number(_state.tap_gain())
 	_tap_button.disabled = unreadable or not _round_active
@@ -331,11 +334,14 @@ func _refresh_progress() -> void:
 	if _evolve_button.visible:
 		_evolve_button.text = "Evolve: %s" % Options.STAGES[_state.stage + 1]["title"]
 	_gate_label.text = _gate_text()
+	_gate_progress.tooltip_text = _gate_label.text
+	_gate_progress.accessibility_description = _gate_label.text
+	_evolve_button.tooltip_text = _gate_label.text
 	_gate_progress.value = _gate_percent()
 	_gate_progress.visible = _evolve_button.visible
 	var event := _event_for_era()
 	_event_button.visible = not event.is_empty()
-	_event_description.visible = _event_button.visible
+	_event_description.visible = _event_button.visible and hud_controls_expanded()
 	if not event.is_empty():
 		_event_button.text = (
 			"%s: %ds remaining" % [Options.EVENTS[event]["title"], _state.event_remaining]
@@ -344,6 +350,7 @@ func _refresh_progress() -> void:
 				"Completed" if _state.completed_events.has(event) else "Start"]
 		)
 		_event_description.text = str(Options.EVENTS[event]["description"])
+		_event_button.tooltip_text = _event_description.text
 		_event_button.disabled = unreadable or not _round_active or not _state.can_trigger_event(event)
 	_leap_button.visible = _state.upgrades.has("civilization")
 	_leap_button.disabled = unreadable or not _round_active or not _state.can_prestige()
@@ -375,6 +382,8 @@ func _refresh_progress() -> void:
 		_save_status.text = _status_note if not _status_note.is_empty() else (
 			"Auto-saved. 100 active EP = 1 Spore Token. Offline resources earn no tokens."
 		)
+	_save_status.visible = unreadable or _save_error != OK or _wallet_error != OK \
+		or _state.at_storage_limit() or not _status_note.is_empty() or hud_controls_expanded()
 
 
 func _refresh_upgrade(button: Button, id: String, unreadable: bool) -> void:
@@ -386,14 +395,14 @@ func _refresh_upgrade(button: Button, id: String, unreadable: bool) -> void:
 	)
 	var shortcut := _upgrade_shortcut(id)
 	button.text = "%s (%s)" % [
-		str(upgrade["title"]) + shortcut,
+		str(upgrade["title"]),
 		"Unlocked" if owned else Options.costs_text(upgrade["costs"]),
 	]
 	var requirements := PackedStringArray()
 	for required: String in upgrade["requires"]:
 		if not _state.upgrades.has(required):
 			requirements.append(str(Options.UPGRADES[required]["title"]))
-	button.tooltip_text = str(upgrade["description"])
+	button.tooltip_text = str(upgrade["description"]) + shortcut
 	if not requirements.is_empty():
 		button.tooltip_text += "\nRequires: " + ", ".join(requirements)
 	button.accessibility_description = button.tooltip_text
@@ -473,18 +482,21 @@ func _set_reduced_motion_enabled(enabled: bool) -> void:
 
 func _layout_panel() -> void:
 	var bounds := _playfield_bounds()
-	var width := minf(1600.0, bounds.size.x)
+	var unit := _shell_hud_unit
+	var width := minf(1120.0 * unit, bounds.size.x)
 	var height := maxf(
 		0.0, bounds.size.y - maxf(0.0, _capture_inset - BOTTOM_CLEARANCE)
 	)
 	_panel.position = bounds.position + Vector2((bounds.size.x - width) * 0.5, 0.0)
 	_panel.size = Vector2(width, height)
-	var unit := get_viewport_rect().size.x / maxf(get_window().size.x, 1.0)
 	var portrait := Responsive.is_portrait(get_viewport_rect().size)
 	_body.vertical = portrait
 	_body.add_theme_constant_override("separation", roundi(16.0 * unit))
-	_view.size_flags_stretch_ratio = 0.35 if portrait else 1.0
-	_scroll.size_flags_stretch_ratio = 0.65 if portrait else 1.0
+	_view.size_flags_stretch_ratio = 0.45 if portrait else 1.35
+	_scroll.size_flags_stretch_ratio = 0.55 if portrait else 1.0
+	_event_description.visible = _event_button.visible and hud_controls_expanded()
+	if _built:
+		_refresh_progress()
 	for label: Label in [_heading, _ep_label]:
 		label.add_theme_font_size_override("font_size", roundi(24.0 * unit))
 	for label: Label in [
