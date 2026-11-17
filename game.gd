@@ -85,6 +85,7 @@ static func manifest() -> GameManifest:
 	}]
 	var theme := GameTheme.new()
 	theme.logo_texture_path = "res://games/yacomio/assets/icon.svg"
+	theme.cover_texture_path = "res://games/yacomio/assets/cover.png"
 	theme.accent = Color("7bd9a5")
 	theme.light = Color("def8e8")
 	theme.plaque_color = Color("122c26")
